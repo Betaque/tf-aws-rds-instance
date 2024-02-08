@@ -2,40 +2,78 @@
 
 This module creates a RDS Instance in AWS with customizable configurations.
 
-## Usage
+### Prerequisites
+- An AWS account.
+- Terraform CLI installed on your local machine, you can check it, [How to Install Guideline here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
 
-1. **Get Started:** Begin by creating the necessary files, provider.tf and main.tf, in your Terraform project directory.
-2. **Declare Provider:** Open provider.tf and declare the AWS provider. Ensure you've configured your AWS credentials and set the desired region.
+### AWS Authentication 
+This guide outlines the process of authenticating with AWS using Terraform through Access Key and Secret Key.
+
+**Generate Access Key and Secret Key:**
+1. Log in to your AWS Management Console.
+2. Go to the IAM service.
+3. Navigate to the Users section and select the user for whom you want to generate the access key and secret key.
+4. Under the Security credentials tab, click on Create access key.
+5. Make sure to save the access key ID and secret access key. These will be used for authentication.
+
+### Module Configurations:
+ 
+**1. Create a new Terraform configuration file (e.g., provider.tf) or use an existing one.**
+
+**2. Add the following code to configure AWS provider with access key and secret key:**
+
 ```
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "5.30.0"
+    }
+  }
+}
+
 provider "aws" {
-  region = "us-east-1" // Set your AWS region
+  region     = "us-west-2"  # Replace with your desired AWS region
+  access_key = "YOUR_ACCESS_KEY"
+  secret_key = "YOUR_SECRET_KEY"
 }
 ```
-3. **Add RDS Module and Define Variables:** Incorporate the RDS Module into your main.tf file, and set values for the variables defined in variables.tf.
+Replace **YOUR_ACCESS_KEY** and **YOUR_SECRET_KEY** with the access key ID and secret access key generated in the previous step.
 
-For Example:-
+or you can export your access_key and secret_key on your local machine.
+```
+export access_key="YOUR_ACCESS_KEY"
+export secret_key="YOUR_SECRET_KEY"
+```
+
+**3. Add RDS Instance Module and Define Variables:**
+
+
+Add the RDS Instance Module to your main.tf file and fill in the variables in variables.tf with the values you need. Just replace the example values with your own settings.
+
+**For Example:-**
+
 ```
 module "rds_instance" {
   source                                                 = "git::https://github.com/Betaque/tf-aws-rds-instance.git//?ref=feat/generic-rds" # Path of the Module
-
-  vpc_id                                                 = module.vpc_module.vpc_id
-  rds_security_group_name                                = "mysql-sg-east1"
-  rds_security_group_tag_name                            = "rds test security group"
-  rds_ingress_rules                                      = [3306]
-  rds_ingress_cidr_blocks                                = ["0.0.0.0/0"]
-  rds_ingress_rules_from_port                            = [3306]
-  rds_ingress_rules_to_port                              = [3306]
-  rds_ingress_rules_protocols                            = ["tcp"]
-  rds_egress_rules                                       = [0]
-  rds_egress_cidr_blocks                                 = ["0.0.0.0/0"]
-  rds_egress_rules_from_port                             = [0]
-  rds_egress_rules_to_port                               = [0]
-  rds_egress_rules_protocols                             = ["-1"]
+  vpc_id                                                 = <YOUR_VPC_ID>
+  rds_instance_security_group_name                       = "mysql-sg-east1"
+  rds_instance_security_group_tag_name                   = "rds test security group"
+  rds_instance_ingress_rules                             = [3306]
+  rds_instance_ingress_cidr_blocks                       = ["0.0.0.0/0"]
+  rds_instance_ingress_rules_from_port                   = [3306]
+  rds_instance_ingress_rules_to_port                     = [3306]
+  rds_instance_ingress_rules_protocols                   = ["tcp"]
+  rds_instance_egress_rules                              = [0]
+  rds_instance_egress_cidr_blocks                        = ["0.0.0.0/0"]
+  rds_instance_egress_rules_from_port                    = [0]
+  rds_instance_egress_rules_to_port                      = [0]
+  rds_instance_egress_rules_protocols                    = ["-1"]
   ingress_rule_database_port                             = 3306
   ingress_rule_port_protocol                             = "tcp"
-  public_subnet_id                                       = module.vpc_module.public_subnet_id
-  private_lambda_subnet_id                               = module.vpc_module.private_subnet_id
-  db_instance_identifier                                 = "test-db"
+  public_subnet_id                                       = <YOUR_PUBLIC_SUBNET_ID>
+  private_subnet_id                                      = <YOUR_PRIVATE_SUBNET_ID>
+  rds_instance_db_instance_identifier                    = "test-db"
   allocated_storage                                      = 20
   storage_type                                           = "gp2"
   engine                                                 = "mysql"
@@ -50,17 +88,23 @@ module "rds_instance" {
   final_snapshot_identifier                              = "test-db"
   monitoring_interval                                    = 60
   performance_insights_enabled                           = true
-  db_subnet_group_name                                   = "test-subnet-group"
+  aws_rds_instance_subnet_group_name                     = "test-subnet-group"
   db_subnet_group_tag_name                               = "test-subnet-group"
 }
 ```
 
-4. **Initialize Terraform:** Run the below terraform Command to initialize the project and download the module dependencies.
+**4. Initialize Terraform:** 
+
+Open a terminal and navigate to the directory containing your Terraform configuration file.
+
+Run the following command to initialize Terraform:
 ```
 terraform init
 ```
 
-5. **Apply Changes:** Execute the below terraform Command to create the VPC infrastructure based on the specified configurations.
+**5. Apply Terraform Configuration:** 
+
+After initializing, you can now apply the Terraform configuration to authenticate with AWS:
 ```
 terraform apply
 ``` 
