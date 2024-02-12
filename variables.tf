@@ -1,9 +1,11 @@
-variable "public_subnet_id" {}
-variable "private_subnet_id" {}
-
 variable "vpc_id" {
   description = "ID of the VPC where to create security group"
   type        = string
+}
+
+variable "subnet_ids" {
+  description = "The VPC Subnet ID's to launch RDS Instances"
+  type = list(string)
 }
 
 variable "rds_instance_security_group_name" {

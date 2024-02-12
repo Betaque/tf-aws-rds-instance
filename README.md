@@ -71,8 +71,7 @@ module "rds_instance" {
   rds_instance_egress_rules_protocols                    = ["-1"]
   ingress_rule_database_port                             = 3306
   ingress_rule_port_protocol                             = "tcp"
-  public_subnet_id                                       = <YOUR_PUBLIC_SUBNET_ID>
-  private_subnet_id                                      = <YOUR_PRIVATE_SUBNET_ID>
+  subnet_id                                              = ["<YOUR_SUBNET_ID_1>", "<YOUR_SUBNET_ID_2>"] #List of subnet IDs where the RDS instances will be launched,  You can also provide a single subnet ID.
   rds_instance_db_instance_identifier                    = "test-db"
   allocated_storage                                      = 20
   storage_type                                           = "gp2"
